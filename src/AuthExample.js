@@ -1,7 +1,11 @@
 import React from 'react';
-import {Switch} from 'react-router';
-import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
+//import {Switch} from 'react-router';
+import createHistory from 'history/createBrowserHistory'
+import {Switch,Router, Route, Link, Redirect} from 'react-router-dom';
+import {ConnectedRouter,push} from 'react-router-redux'
 import { connect } from 'react-redux';
+
+const history = createHistory()
 
 class AuthExample extends React.Component {
     constructor(props) {
@@ -9,29 +13,26 @@ class AuthExample extends React.Component {
         console.log( props );
     }
     render() {
+        console.log("rendered");
         return (
-            <Router>
-        <div>
-          <AuthButton />
-          <ul>
-            <li>
-              <Link to='/public'>Public Page</Link>
-            </li>
-            <li>
-              <Link to='/protected'>Protected Page</Link>
-            </li>
-          </ul>
-          <Switch>
-            <Route exact path="/" component={Home}></Route>
-            <Route exact path='/public' component={Public}></Route>
-            <Route exact path='/login' component={Login}></Route>
-            <Route exact path="/test" component={Test}></Route>
-            <Redirect to="/test" from="/ttest"></Redirect>
-          </Switch>
-          
-          {/*<PrivateRouteComponent path='/protected' component={Protected}></PrivateRouteComponent>*/}
-        </div>
-      </Router>
+            <ConnectedRouter history={history}>
+                <div>
+                  <AuthButton />
+                  <ul>
+                    <li>
+                      <Link to='/public'>Public Page</Link>
+                    </li>
+                    <li>
+                      <Link to='/protected'>Protected Page</Link>
+                    </li>
+                  </ul>
+                    <Route exact path="/" component={Home}></Route>
+                    <Route exact path='/public' component={Public}></Route>
+                    <Route exact path='/login' component={Login}></Route>
+                    <Route exact path="/test" component={Test}></Route>
+                    <PrivateRoute path='/protected' component={Protected}></PrivateRoute>
+                </div>
+            </ConnectedRouter>
         );
     }
 }
@@ -62,10 +63,11 @@ class PrivateRouteComponent extends React.Component {
         console.log(props);
     }
     render() {
+        console.log("PrivateRoute render");
         const {component:Component, ...rest} = this.props;
         let res;
         let isLogined = this.props.isLogined;
-        isLogined ? 
+        /*isLogined ? 
         res = <Route exact path={rest.path} component={Protected}/>:
         res = <Route exat path={rest.path} render={(props)=>{
           console.log(props);
@@ -79,9 +81,13 @@ class PrivateRouteComponent extends React.Component {
             
           }>
                 
-              </Route>;
+              </Route>;*/
+       
         //res = <Route {...rest} render={(props)=><Protected {...props}/>}/>
-        return res;
+        if(isLogined)
+            return <Route exact path="/public" component={HasLogined}></Route>
+        else
+            return <Route exact path="/public" component={NotLogin}></Route>
     }
 }
 const PrivateRoute = connect( state => {
@@ -95,6 +101,9 @@ const Test = (props) => {
       <h3>Test</h3>
     );
 };
+
+const NotLogin = ()=><h1>未登录</h1>
+const HasLogined = ()=><h1>已登录</h1>
 
 const Home = ({match}) => {
     console.log( match );

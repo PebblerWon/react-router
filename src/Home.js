@@ -1,42 +1,66 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 const Component = React.Component;
-export class About extends Component {
+class About extends Component {
     render() {
         return (<div>about</div>);
     }
 }
 
-export class Inbox extends Component {
+class InboxComponent extends Component {
+    constructor(props){
+        super(props);
+        console.log(props)
+    }
     render() {
-        return (<div>Inbox</div>);
+        console.log("inbox rendered")
+        if(this.props.curUser.isLogined)
+            return (<Route path="/inbox" component={()=><h1>已登录</h1>}></Route>)
+        else
+            return (<Route path="/inbox" component={()=><h1>未登录</h1>}></Route>)
     }
 }
 
-export class Home extends Component {
+const InboxContainer = connect(state=>state)(InboxComponent);
+
+class Home extends Component {
     render() {
         return (<div>Home</div>);
     }
 }
 
 
-export class App extends Component {
+export default class App extends Component {
 
     render() {
         return (
-            <div>
-				<h1>App</h1>
-				<ul>
-					<li>
-						<Link to='/about'>about</Link>
-					</li>
-					<li>
-						<Link to='/inbox'>inbox</Link>
-					</li>
- 				</ul> 
- 				{this.props.children}
-			</div>
+                <div>
+    				<h1>App</h1>
+    				<ul>
+    					<li>
+    						<Link to='/about'>about</Link>
+    					</li>
+    					<li>
+    						<Link to='/inbox'>inbox</Link>
+    					</li>
+     				</ul> 
+     				<Route path="/about" render={()=>{
+                        return(
+                            <div>
+                                <h2>about</h2>
+                                <Route path="/about/1" render={()=> <h3>about/1</h3>}>
+                                   
+                                </Route>
+                            </div>   
+                        )
+                    }}>
+                       
+                    </Route>
+
+                    <InboxContainer></InboxContainer>
+    			</div>
         );
     }
 }

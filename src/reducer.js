@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-
+import {routerReducer} from 'react-router-redux'
 const initialState = {
     curUser: {
         isLogined: false,
@@ -57,7 +57,8 @@ export default  combineReducers( {
     curUser: curUserName,
     prop1: setProp1Value,
     prop2: setProp2Value,
-    test:1
+    test:1,
+    routing:routerReducer,
 } )
 
 
